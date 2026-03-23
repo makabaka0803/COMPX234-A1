@@ -31,7 +31,16 @@ class Assignment1:
           
         # Start all the threads
         # Write code here
+            for i in range(self.NUM_PRINTERS) 
+            p= self.printers(i,self)
+            self.pThreads.append(p)
 
+            for t in self.tThreads
+            t.start()
+
+            for p in self.pThreads
+            p.start()
+     
         # Let the simulation run for some time
         time.sleep(self.SIMULATION_TIME)
 
@@ -40,6 +49,9 @@ class Assignment1:
 
         # Wait until all printer threads finish by joining them
         # Write code here
+        for p in self.pThreads:
+            p.join()
+        print("Simulation finished")    
 
     # Printer class
     class printerThread(threading.Thread):
