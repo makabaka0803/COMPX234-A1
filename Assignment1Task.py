@@ -21,6 +21,11 @@ class Assignment1:
         self.mThreads = []             # list for machine threads
         self.pThreads = []             # list for printer threads
 
+        # Create semaphores
+        self.semaphore = threading.Semaphore(self.NUM_PRINTERS)  # counting semaphore
+        self.binary = threading.Semaphore(1)
+
+
     def startSimulation(self):
         # Create Machine and Printer threads
         # Write code here
@@ -88,8 +93,13 @@ class Assignment1:
                 # Machine sleeps for a random amount of time
                 self.machineSleep()
                 # Machine wakes up and sends a print request
-                # Write code here
+                # Write code here          
                 self.printRequest(self.machineID)
+                # Both semaphores have been acquired, now send a print request
+                self.postRequest(self.machineID)
+               
+                
+
    
         def machineSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_MACHINE_SLEEP)
@@ -101,3 +111,12 @@ class Assignment1:
             doc = printDoc(f"My name is machine {id}", id)
             # Insert it in the print queue
             self.outer.print_list.queueInsert(doc)
+
+        # Write code here for postRequest, i.e., after inserting the print request
+        def postRequest(self, id):
+            print(f"Machine {id} Releasing binary semaphore")
+            # Release the binary semaphore
+            self.outer.binary.release()
+        
+
+            
