@@ -104,10 +104,13 @@ class Assignment1:
                 self.machineSleep()
                 # Machine wakes up and sends a print request
                 # Write code here 
-                                           
-                self.printRequest(self.machineID)
-                # Both semaphores have been acquired, now send a print request
-                self.postRequest(self.machineID)              
+                if self.outer.sim_active:
+                    # Machine wakes up and sends a print request
+                    self.outer.semaphore.acquire()  
+                    self.outer.binary.acquire()                                                     
+                    self.printRequest(self.machineID)
+                    # Both semaphores have been acquired, now send a print request
+                    self.postRequest(self.machineID)              
    
         def machineSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_MACHINE_SLEEP)
