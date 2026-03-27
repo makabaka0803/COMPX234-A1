@@ -24,8 +24,7 @@ class Assignment1:
         # Create semaphores
         self.semaphore = threading.Semaphore(self.NUM_PRINTERS)  # counting semaphore
         self.binary = threading.Semaphore(1)
-
-
+        
     def startSimulation(self):
         # Create Machine and Printer threads
         # Write code here
@@ -55,7 +54,9 @@ class Assignment1:
         # Write code here
         for p in self.pThreads:
             p.join()
-            print("Simulation finished.")    
+        for m in self.mThreads:
+            m.join()    
+        print("Simulation finished.")    
 
     # Printer class
     class printerThread(threading.Thread):
@@ -70,7 +71,16 @@ class Assignment1:
                 self.printerSleep()
                 # Grab the request at the head of the queue and print it
                 # Write code here
-                self.printDox(self.printerID)
+                try:
+                    # Grab the request at the head of the queue and print it
+                    self.outer.binary.acquire()             
+                    self.printDox(self.printerID)
+                    self.outer.semaphore.release()
+                    self.outer.binary.release()
+                except:
+                    if self.outer.binary.locked():
+                        self.outer.binary.release()
+                    continue    
 
         def printerSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_PRINTER_SLEEP)
@@ -93,13 +103,11 @@ class Assignment1:
                 # Machine sleeps for a random amount of time
                 self.machineSleep()
                 # Machine wakes up and sends a print request
-                # Write code here          
+                # Write code here 
+                                           
                 self.printRequest(self.machineID)
                 # Both semaphores have been acquired, now send a print request
-                self.postRequest(self.machineID)
-               
-                
-
+                self.postRequest(self.machineID)              
    
         def machineSleep(self):
             sleepSeconds = random.randint(1, self.outer.MAX_MACHINE_SLEEP)
